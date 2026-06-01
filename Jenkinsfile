@@ -117,7 +117,7 @@ pipeline {
           set -e
           mkdir -p "${PIP_CACHE_DIR}"
 
-          base_py="${PYTHON_BIN}"
+          base_py="${PYTHON_BIN:-python3}"
           if ! command -v "${base_py}" >/dev/null 2>&1; then
             if command -v python3 >/dev/null 2>&1; then
               base_py="python3"
@@ -165,7 +165,6 @@ pipeline {
 
           if [ "${need_install}" = "1" ]; then
             echo "Installing Python dependencies (first run or requirements changed)..."
-            "${pybin}" -m pip install --cache-dir "${PIP_CACHE_DIR}" --upgrade pip
             "${pybin}" -m pip install --cache-dir "${PIP_CACHE_DIR}" -r requirements.txt
             echo "${current_hash}" > "${REQ_HASH_FILE}"
           else
@@ -210,7 +209,7 @@ pipeline {
 
     stage('Run Form Matrix (All url_type)') {
       when {
-        expression { env.RUN_SUITE == 'form_matrix' || env.RUN_SUITE == 'both' }
+        expression { params.RUN_SUITE == 'form_matrix' || params.RUN_SUITE == 'both' }
       }
       steps {
         sh '''
@@ -228,7 +227,7 @@ pipeline {
 
     stage('Run Dataset Suite') {
       when {
-        expression { env.RUN_SUITE == 'dataset_suite' || env.RUN_SUITE == 'both' }
+        expression { params.RUN_SUITE == 'dataset_suite' || params.RUN_SUITE == 'both' }
       }
       steps {
         sh '''
@@ -246,7 +245,7 @@ pipeline {
 
     stage('Run Single Case') {
       when {
-        expression { env.RUN_SUITE == 'single_case' }
+        expression { params.RUN_SUITE == 'single_case' }
       }
       steps {
         sh '''
