@@ -694,7 +694,36 @@ class AddressForm:
         if not selector:
             raise AssertionError("Step: Ввод номера телефона\nExpected: phone selector is configured\nActual: selector is missing")
         locator = self._first_visible(selector)
-        locator.fill(value)
+        expected_digits = "".join(ch for ch in value if ch.isdigit())
+        if not expected_digits:
+            raise AssertionError("Step: Ввод номера телефона\nExpected: non-empty phone digits\nActual: phone input value is empty")
+
+        for _ in range(3):
+            locator.click(timeout=2000, force=True)
+            try:
+                locator.press("Control+A")
+                locator.press("Backspace")
+            except Exception:
+                pass
+            locator.type(expected_digits, delay=35)
+            self.page.wait_for_timeout(150)
+
+            actual_digits = "".join(ch for ch in (locator.input_value() or "") if ch.isdigit())
+            # Phone mask can include country code prefix +7.
+            local_digits = (
+                actual_digits[1:]
+                if len(actual_digits) == len(expected_digits) + 1 and actual_digits.startswith("7")
+                else actual_digits
+            )
+            if local_digits.endswith(expected_digits):
+                return
+
+        actual_phone = locator.input_value()
+        raise AssertionError(
+            "Step: Ввод номера телефона\n"
+            f"Expected: phone {value} is applied\n"
+            f"Actual: phone field value = {actual_phone}"
+        )
 
     def get_phone_value(self) -> str:
         selector = first_selector(self.form_config.selectors, "phone")
