@@ -271,7 +271,14 @@ class AddressForm:
     def _is_region_match(self, city_text: str, preferred_region: str | None) -> bool:
         if not preferred_region:
             return True
-        return self._norm_text(preferred_region) in self._norm_text(city_text)
+        preferred = self._norm_text(preferred_region)
+        city = self._norm_text(city_text)
+        if preferred in city:
+            return True
+        # Iteration 2: some Domodedovo v2 suggestions expose only "Moscow oblast" in city text.
+        if "домодедов" in preferred and "московская область" in city:
+            return True
+        return False
 
     def _is_strict_street_match(self, street_text: str, expected: str) -> bool:
         st = self._norm_text(street_text)

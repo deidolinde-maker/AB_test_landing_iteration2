@@ -11,6 +11,7 @@ import pytest
 from helpers.application_json_store import ApplicationJsonStore
 from helpers.config_loader import load_config
 from helpers.test_case_factory import main_search_cases, synonym_cases
+from components.address_form import AddressForm
 from tests._search_flow import _should_append_application_record
 
 
@@ -102,3 +103,8 @@ def test_iteration_two_contract_files_are_present_and_parseable():
 def test_synonym_dataset_has_cases_for_real_addresses(loaded_config):
     cases = synonym_cases(loaded_config)
     assert cases, "synonym_cases should not be empty for current config"
+
+
+def test_region_match_accepts_domodedovo_as_moscow_oblast_context():
+    form = AddressForm.__new__(AddressForm)
+    assert form._is_region_match("Московская область, мкр Центральный", "Домодедово")
