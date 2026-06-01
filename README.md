@@ -26,6 +26,13 @@
 4 URL x 3 forms x 2 variants = 24 pytest test items
 ```
 
+Дополнительные диагностические dataset-ы:
+
+- `form_open_smoke` — проверка открытия обязательных форм без submit;
+- `json_store_smoke` — smoke проверка JSON-хранилища;
+- `submit_success_marker_smoke` — smoke проверка success URL markers;
+- `mini_bug_report_smoke` — smoke проверка генерации mini bug report.
+
 Формат `case_id`:
 
 ```text

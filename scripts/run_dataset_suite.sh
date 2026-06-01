@@ -58,6 +58,10 @@ fi
 
 datasets=(
   "submit_applications|tests/test_search_variant_a.py::test_search_variant_a tests/test_search_variant_b.py::test_search_variant_b"
+  "form_open_smoke|tests/test_form_open_smoke.py::test_form_open_smoke"
+  "json_store_smoke|tests/test_json_store_smoke.py::test_json_store_smoke_ensure_current_run_and_append"
+  "submit_success_marker_smoke|tests/test_submit_success_marker_smoke.py::test_submit_success_marker_smoke"
+  "mini_bug_report_smoke|tests/test_mini_bug_report_smoke.py::test_mini_bug_report_smoke_render_failed_case"
 )
 
 failed_runs=()

@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 from datetime import datetime
+from dataclasses import replace
 import os
 
 import pytest
@@ -11,7 +12,14 @@ from helpers.allure_attachments import attach_json_file, attach_markdown_file, a
 from helpers.application_json_store import ApplicationJsonStore
 from helpers.config_loader import load_config
 from helpers.test_case_factory import (
+    ab_cookie_cases,
+    adjacent_cases,
+    forbidden_region_cases,
+    isolation_cases,
     main_search_cases,
+    region_change_cases,
+    regional_navigation_cases,
+    synonym_cases,
 )
 
 
@@ -31,6 +39,17 @@ def pytest_addoption(parser):
         choices=[
             "all",
             "submit_applications",
+            "form_open_smoke",
+            "json_store_smoke",
+            "submit_success_marker_smoke",
+            "mini_bug_report_smoke",
+            "ab_cookie",
+            "forbidden_region",
+            "isolation",
+            "adjacent",
+            "region_change",
+            "synonyms",
+            "regional_navigation",
         ],
     )
     parser.addoption("--form", action="store", default="all")
@@ -92,23 +111,56 @@ def _case_ids(cases):
     return [case.pytest_id for case in cases]
 
 
+def _form_open_smoke_cases(data):
+    rows = []
+    for variant in ("A", "B"):
+        for case in main_search_cases(data, variant):
+            rows.append(replace(case, dataset="form_open_smoke"))
+    return rows
+
+
 def pytest_generate_tests(metafunc):
     data = _loaded()
     cfg = metafunc.config
     fn = metafunc.function.__name__
 
-    if "case" not in metafunc.fixturenames:
+    if "case" in metafunc.fixturenames:
+        if fn == "test_search_variant_a":
+            cases = main_search_cases(data, "A")
+        elif fn == "test_search_variant_b":
+            cases = main_search_cases(data, "B")
+        elif fn == "test_forbidden_region_address_not_found":
+            cases = forbidden_region_cases(data)
+        elif fn == "test_variant_a_does_not_find_v2_address":
+            cases = isolation_cases(data, "A")
+        elif fn == "test_variant_b_does_not_find_v1_address":
+            cases = isolation_cases(data, "B")
+        elif fn == "test_adjacent_search":
+            cases = adjacent_cases(data)
+        elif fn == "test_region_change_inside_form_does_not_change_url":
+            cases = region_change_cases(data)
+        elif fn == "test_form_open_smoke":
+            cases = _form_open_smoke_cases(data)
+        else:
+            cases = []
+        cases = [case for case in cases if _case_passes_cli(case, cfg)]
+        metafunc.parametrize("case", cases, ids=_case_ids(cases))
         return
 
-    if fn == "test_search_variant_a":
-        cases = main_search_cases(data, "A")
-    elif fn == "test_search_variant_b":
-        cases = main_search_cases(data, "B")
-    else:
-        cases = []
+    if "synonym_case" in metafunc.fixturenames:
+        cases = [case for case in synonym_cases(data) if _case_passes_cli(case, cfg)]
+        metafunc.parametrize("synonym_case", cases, ids=_case_ids(cases))
+        return
 
-    cases = [case for case in cases if _case_passes_cli(case, cfg)]
-    metafunc.parametrize("case", cases, ids=_case_ids(cases))
+    if "navigation_case" in metafunc.fixturenames:
+        cases = [case for case in regional_navigation_cases(data) if _case_passes_cli(case, cfg)]
+        metafunc.parametrize("navigation_case", cases, ids=_case_ids(cases))
+        return
+
+    if "site_url_case" in metafunc.fixturenames:
+        cases = [case for case in ab_cookie_cases(data) if _case_passes_cli(case, cfg)]
+        metafunc.parametrize("site_url_case", cases, ids=_case_ids(cases))
+        return
 
 
 def pytest_collection_modifyitems(config, items):
@@ -121,23 +173,54 @@ def pytest_collection_modifyitems(config, items):
     selected_dataset = config.getoption("--dataset")
     if selected_dataset not in {"all", "", None}:
         dataset_marker_map = {
-            "submit_applications": {"variant_a", "variant_b"},
+            "submit_applications": {"submit_applications", "variant_a", "variant_b"},
+            "form_open_smoke": {"form_open_smoke"},
+            "json_store_smoke": {"json_store_smoke"},
+            "submit_success_marker_smoke": {"submit_success_marker_smoke"},
+            "mini_bug_report_smoke": {"mini_bug_report_smoke"},
+            "ab_cookie": {"ab_cookie"},
+            "forbidden_region": {"forbidden_region"},
+            "isolation": {"isolation"},
+            "adjacent": {"adjacent"},
+            "region_change": {"region_change"},
+            "synonyms": {"synonyms"},
+            "regional_navigation": {"regional_navigation"},
         }
         allowed_markers = dataset_marker_map[selected_dataset]
+        known_dataset_markers = set().union(*dataset_marker_map.values())
         to_drop = [
             item
             for item in items
-            if "e2e" in item.keywords and not any(marker in item.keywords for marker in allowed_markers)
+            if any(marker in item.keywords for marker in known_dataset_markers)
+            and not any(marker in item.keywords for marker in allowed_markers)
         ]
         if to_drop:
             for item in to_drop:
                 items.remove(item)
             config.hook.pytest_deselected(items=to_drop)
 
-    # Iteration 2 scope: only submit application scenarios remain active in e2e mode.
-    active_e2e_files = {"test_search_variant_a.py", "test_search_variant_b.py"}
+    active_e2e_files_by_dataset = {
+        "submit_applications": {"test_search_variant_a.py", "test_search_variant_b.py"},
+        "form_open_smoke": {"test_form_open_smoke.py"},
+        "ab_cookie": {"test_ab_cookie.py"},
+        "forbidden_region": {"test_forbidden_region.py"},
+        "isolation": {"test_search_isolation.py"},
+        "adjacent": {"test_adjacent_search.py"},
+        "region_change": {"test_region_change_inside_form.py"},
+        "synonyms": {"test_synonyms.py"},
+        "regional_navigation": {"test_regional_navigation.py"},
+        "json_store_smoke": set(),
+        "submit_success_marker_smoke": set(),
+        "mini_bug_report_smoke": set(),
+    }
     if config.getoption("--run-e2e"):
-        legacy_skip = pytest.mark.skip(reason="Out of scope for iteration 2 submit scenarios")
+        if selected_dataset in {"all", "", None}:
+            active_e2e_files = set()
+            for files in active_e2e_files_by_dataset.values():
+                active_e2e_files.update(files)
+        else:
+            active_e2e_files = active_e2e_files_by_dataset.get(selected_dataset, set())
+        legacy_skip = pytest.mark.skip(reason="Out of scope for selected dataset in e2e mode")
         for item in items:
             if "e2e" in item.keywords and item.fspath.basename not in active_e2e_files:
                 item.add_marker(legacy_skip)

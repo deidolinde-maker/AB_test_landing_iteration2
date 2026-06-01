@@ -23,7 +23,7 @@ pipeline {
     choice(name: 'CASE_FORM', choices: ['all', 'profit', 'connection', 'checkaddress'], description: "Used when RUN_SUITE=single_case. 'all' runs all iteration 2 forms.")
     choice(
       name: 'CASE_DATASET',
-      choices: ['submit_applications'],
+      choices: ['submit_applications', 'form_open_smoke', 'json_store_smoke', 'submit_success_marker_smoke', 'mini_bug_report_smoke'],
       description: 'Used when RUN_SUITE=single_case'
     )
     choice(
