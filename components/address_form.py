@@ -231,12 +231,38 @@ class AddressForm:
                 continue
         return False
 
+    def _active_form_root(self):
+        street_selector = first_selector(self.form_config.selectors, "street")
+        if not street_selector:
+            return None
+        street_input = self._first_visible(street_selector)
+        if street_input.count() == 0:
+            return None
+        form_root = street_input.locator("xpath=ancestor::form[1]").first
+        if form_root.count() == 0:
+            return None
+        return form_root
+
     def _collect_visible_suggest_items(self, root_selector: str, limit: int = 30) -> list[str]:
-        root = self.page.locator(root_selector).first
+        root = None
+        form_root = self._active_form_root()
+        if form_root is not None:
+            scoped = form_root.locator(root_selector).first
+            if scoped.count() > 0 and scoped.is_visible():
+                root = scoped
+        if root is None:
+            root = self.page.locator(root_selector).first
         if root.count() == 0 or not root.is_visible():
             # Fallback for forms that use generic autocomplete container ids/classes.
             if root_selector in {"#street-list", "#house-list"}:
-                root = self.page.locator(".autocomplete-list:not(.hidden)").first
+                if form_root is not None:
+                    scoped_fallback = form_root.locator(".autocomplete-list:not(.hidden)").first
+                    if scoped_fallback.count() > 0 and scoped_fallback.is_visible():
+                        root = scoped_fallback
+                    else:
+                        root = self.page.locator(".autocomplete-list:not(.hidden)").first
+                else:
+                    root = self.page.locator(".autocomplete-list:not(.hidden)").first
             if root.count() == 0 or not root.is_visible():
                 return []
         items = root.locator(".autocomplete-item")
@@ -291,9 +317,15 @@ class AddressForm:
 
     def _collect_street_rows(self) -> list[tuple[object, str, str]]:
         rows: list[tuple[object, str, str]] = []
-        street_items = self.page.locator("#street-list .autocomplete-item")
-        if street_items.count() == 0:
-            street_items = self.page.locator(".autocomplete-list:not(.hidden) .autocomplete-item")
+        form_root = self._active_form_root()
+        if form_root is not None:
+            street_items = form_root.locator("#street-list .autocomplete-item")
+            if street_items.count() == 0:
+                street_items = form_root.locator(".autocomplete-list:not(.hidden) .autocomplete-item")
+        else:
+            street_items = self.page.locator("#street-list .autocomplete-item")
+            if street_items.count() == 0:
+                street_items = self.page.locator(".autocomplete-list:not(.hidden) .autocomplete-item")
         for idx in range(street_items.count()):
             item = street_items.nth(idx)
             try:
@@ -319,6 +351,31 @@ class AddressForm:
         exp = self._norm_text(expected)
         exact = 0 if st == exp or st in {f"{exp} ул", f"{exp} ул.", f"{exp} улица"} else 1
         return (exact, len(st))
+
+    def _ensure_house_field_ready_after_street_select(
+        self,
+        expected: str,
+        preferred_region: str | None,
+    ) -> None:
+        if self.is_house_field_ready():
+            return
+        street_selector = first_selector(self.form_config.selectors, "street")
+        if not street_selector:
+            return
+        street_input = self._first_visible(street_selector)
+        try:
+            street_input.click(timeout=2000, force=True)
+            street_input.press("ArrowDown")
+            street_input.press("Enter")
+            self.page.wait_for_timeout(250)
+            if self.is_house_field_ready():
+                self._last_selected_street = {
+                    "expected": expected,
+                    "preferred_region": preferred_region,
+                    "strategy": "street_list_strict_then_keyboard_confirm",
+                }
+        except Exception:
+            return
 
     def _click_visible_text(self, text: str, timeout_ms: int = 8000) -> None:
         deadline = time.monotonic() + timeout_ms / 1000
@@ -467,6 +524,7 @@ class AddressForm:
                     "selected_city": best_city,
                     "strategy": "street_list_strict",
                 }
+                self._ensure_house_field_ready_after_street_select(expected, preferred_region)
                 return
 
             if preferred_region:
