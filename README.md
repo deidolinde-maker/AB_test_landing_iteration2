@@ -2,7 +2,7 @@
 
 Автотесты второй итерации A/B-теста `testNewAddressPoisk` для лендинга МТС Интернет.
 
-Цель iteration 2: пройти пользовательский сценарий до успешной отправки заявки, сохранить данные заявки в общий JSON для iteration 3 и приложить диагностические артефакты в Allure.
+Цель iteration 2: пройти пользовательский сценарий до отправки заявки, сохранить результат в общий JSON для iteration 3 и приложить диагностические артефакты в Allure.
 
 ## Что проверяет проект
 
@@ -14,7 +14,7 @@
 - ввод телефона `9999999999`;
 - submit формы;
 - успешную отправку по URL markers `/tilda/form1/submitted`, `/thanks`, `/thank_you_page`;
-- запись успешных и неуспешных сценариев в JSON для iteration 3;
+- запись только успешных submit-сценариев в JSON (`submit_success == true`);
 - Allure artifacts: cookies, `_ym_uid`, network, console, screenshot/video, application record;
 - mini bug report в Markdown и JSON при ошибке.
 
@@ -53,7 +53,7 @@ mts_internet_online__moscow_subdomain__checkaddress__B__B_moscow_lipovy_park
 TESTNEWADDRESSPOISK_APPLICATIONS_JSON=/custom/path.json
 ```
 
-JSON защищен lock-файлом и дописывается атомарно, чтобы работать с `pytest-xdist` и несколькими pytest-процессами одного Jenkins build.
+JSON защищён lock-файлом и дописывается атомарно для совместимости с `pytest-xdist` и несколькими pytest-процессами одного Jenkins build.
 
 ## Локальный запуск
 
