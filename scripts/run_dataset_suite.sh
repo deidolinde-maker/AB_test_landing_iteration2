@@ -62,6 +62,13 @@ datasets=(
   "json_store_smoke|tests/test_json_store_smoke.py::test_json_store_smoke_ensure_current_run_and_append"
   "submit_success_marker_smoke|tests/test_submit_success_marker_smoke.py::test_submit_success_marker_smoke"
   "mini_bug_report_smoke|tests/test_mini_bug_report_smoke.py::test_mini_bug_report_smoke_render_failed_case"
+  "ab_cookie|tests/test_ab_cookie.py::test_ab_cookie_assigned_on_clean_context tests/test_ab_cookie.py::test_ab_cookie_persists_after_reload"
+  "regional_navigation|tests/test_regional_navigation.py::test_regional_navigation_chain"
+  "forbidden_region|tests/test_forbidden_region.py::test_forbidden_region_address_not_found"
+  "isolation|tests/test_search_isolation.py::test_variant_a_does_not_find_v2_address tests/test_search_isolation.py::test_variant_b_does_not_find_v1_address"
+  "adjacent|tests/test_adjacent_search.py::test_adjacent_search"
+  "region_change|tests/test_region_change_inside_form.py::test_region_change_inside_form_does_not_change_url"
+  "synonyms|tests/test_synonyms.py::test_synonym_search"
 )
 
 failed_runs=()
