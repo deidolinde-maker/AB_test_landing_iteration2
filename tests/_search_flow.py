@@ -27,6 +27,10 @@ def _is_form_required_for_url(site_config, form_config, url_type: str) -> bool:
     return not form_config.optional
 
 
+def _should_append_application_record(submit_success: bool) -> bool:
+    return bool(submit_success)
+
+
 def run_search_case(
     *,
     case,
@@ -281,7 +285,7 @@ def run_search_case(
                 "error": error_payload,
             }
             attach_json("application_record", record)
-            if submit_success:
+            if _should_append_application_record(submit_success):
                 application_json_store.append(record)
                 attach_json("applications_json_snapshot", application_json_store.read())
             else:

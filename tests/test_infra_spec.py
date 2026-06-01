@@ -11,6 +11,7 @@ import pytest
 from helpers.application_json_store import ApplicationJsonStore
 from helpers.config_loader import load_config
 from helpers.test_case_factory import main_search_cases, synonym_cases
+from tests._search_flow import _should_append_application_record
 
 
 PYTEST_ID_PATTERN = re.compile(
@@ -63,6 +64,24 @@ def test_application_json_store_initializes_and_appends(tmp_path):
     assert payload["build_number"] == "42"
     assert payload["source_iteration"] == "iteration_2_applications"
     assert payload["applications"] == [{"case_id": "case_1", "submit_success": True}]
+
+
+def test_applications_json_policy_stores_only_successful_submits(tmp_path):
+    path = tmp_path / "orders_success_only.json"
+    store = ApplicationJsonStore(path, run_id="run_success_only", build_number="99")
+    store.initialize()
+    records = [
+        {"case_id": "ok_1", "submit_success": True},
+        {"case_id": "fail_1", "submit_success": False},
+        {"case_id": "ok_2", "submit_success": True},
+    ]
+    for record in records:
+        if _should_append_application_record(record["submit_success"]):
+            store.append(record)
+
+    payload = store.read()
+    assert [row["case_id"] for row in payload["applications"]] == ["ok_1", "ok_2"]
+    assert all(row["submit_success"] is True for row in payload["applications"])
 
 
 def test_iteration_two_contract_files_are_present_and_parseable():
