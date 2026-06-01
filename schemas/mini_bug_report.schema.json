@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "testNewAddressPoisk iteration 2 mini bug report",
+  "type": "object",
+  "required": [
+    "title",
+    "error_code",
+    "failed_step",
+    "expected_result",
+    "actual_result",
+    "reproduction_steps",
+    "case_id"
+  ],
+  "properties": {
+    "title": { "type": "string" },
+    "error_code": { "type": "string" },
+    "failed_step": { "type": "string" },
+    "severity": { "type": "string" },
+    "expected_result": { "type": "string" },
+    "actual_result": { "type": "string" },
+    "reproduction_steps": { "type": "array", "items": { "type": "string" } },
+    "case_id": { "type": "string" },
+    "site": { "type": ["string", "null"] },
+    "url_type": { "type": ["string", "null"] },
+    "start_url": { "type": ["string", "null"] },
+    "actual_url": { "type": ["string", "null"] },
+    "variant": { "type": ["string", "null"] },
+    "ab_cookie": { "type": ["string", "null"] },
+    "form_key": { "type": ["string", "null"] },
+    "region": { "type": ["string", "null"] },
+    "street": { "type": ["string", "null"] },
+    "house": { "type": ["string", "null"] },
+    "phone": { "type": ["string", "null"] },
+    "submit_time": { "type": ["string", "null"] },
+    "artifacts": { "type": ["object", "null"] },
+    "network_summary": { "type": ["object", "array", "null"] },
+    "console_errors": { "type": ["array", "null"] },
+    "recommendation": { "type": ["string", "null"] }
+  }
+}

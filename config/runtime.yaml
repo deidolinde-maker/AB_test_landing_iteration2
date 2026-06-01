@@ -1,0 +1,10 @@
+version: 1
+applications_json_path: "/var/lib/jenkins/shared/testNewAddressPoisk/testNewAddressPoisk_orders_data.json"
+applications_json_env: "TESTNEWADDRESSPOISK_APPLICATIONS_JSON"
+fail_on_missing_ym_uid: false
+artifacts_root: "artifacts/iteration_2"
+mini_bug_reports_dir: "artifacts/iteration_2/mini_bug_reports"
+lock_timeout_sec: 30
+phone: "9999999999"
+source_iteration: "iteration_2_applications"
+schema_version: 1

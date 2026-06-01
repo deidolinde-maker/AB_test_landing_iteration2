@@ -1,0 +1,10 @@
+version: 1
+success_url_markers:
+  - "/tilda/form1/submitted"
+  - "/thanks"
+  - "/thank_you_page"
+
+timeouts_ms:
+  submit_request: 15000
+  submit_redirect: 20000
+

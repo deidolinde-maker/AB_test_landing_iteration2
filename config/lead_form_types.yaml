@@ -1,0 +1,9 @@
+version: 1
+expected_order_site_by_site:
+  mts_internet_online: "mts_landing"
+
+lead_form_type:
+  profit: "vygodnoe_specpredlozhenie"
+  connection: "popap_zayavka_na_podklyuchenie"
+  checkaddress: "forma_proverit'_adress"
+

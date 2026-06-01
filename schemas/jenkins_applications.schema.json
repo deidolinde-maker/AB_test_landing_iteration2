@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "testNewAddressPoisk iteration 2 applications",
+  "type": "object",
+  "required": [
+    "run_id",
+    "build_number",
+    "created_at",
+    "source_iteration",
+    "applications"
+  ],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "build_number": { "type": "string" },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "source_iteration": { "const": "iteration_2_applications" },
+    "schema_version": { "type": "integer" },
+    "applications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "site",
+          "start_url",
+          "measurement_url",
+          "url_type",
+          "variant",
+          "testNewAddressPoisk_cookie",
+          "form_key",
+          "expected_lead_form_type",
+          "expected_order_site",
+          "address_version",
+          "region_selected_in_form",
+          "expected_id_type",
+          "expected_id",
+          "street_query",
+          "selected_street",
+          "house_query",
+          "selected_house",
+          "phone",
+          "submit_success",
+          "success_criterion"
+        ],
+        "properties": {
+          "case_id": { "type": "string" },
+          "site": { "type": "string" },
+          "start_url": { "type": "string" },
+          "measurement_url": { "type": "string" },
+          "url_type": { "type": "string" },
+          "url_before_city_change": { "type": ["string", "null"] },
+          "url_after_city_change": { "type": ["string", "null"] },
+          "url_after_submit": { "type": ["string", "null"] },
+          "variant": { "enum": ["A", "B"] },
+          "testNewAddressPoisk_cookie": { "enum": ["A", "B", null] },
+          "ym_uid": { "type": ["string", "null"] },
+          "form_key": { "type": "string" },
+          "form_title": { "type": ["string", "null"] },
+          "expected_lead_form_type": { "type": "string" },
+          "expected_order_site": { "type": "string" },
+          "address_version": { "enum": ["v1", "v2"] },
+          "region_selected_in_form": { "type": "string" },
+          "expected_id_type": { "enum": ["address_id", "house_id"] },
+          "expected_id": { "type": "integer" },
+          "street_query": { "type": "string" },
+          "selected_street": { "type": "string" },
+          "house_query": { "type": "string" },
+          "selected_house": { "type": "string" },
+          "phone": { "const": "9999999999" },
+          "submit_time": { "type": ["string", "null"] },
+          "url_success_markers": { "type": "array", "items": { "type": "string" } },
+          "submit_success": { "type": "boolean" },
+          "success_criterion": { "type": "string" },
+          "submit_network": { "type": ["object", "null"] },
+          "artifacts": { "type": ["object", "null"] },
+          "error": { "type": ["object", "null"] }
+        }
+      }
+    }
+  }
+}
