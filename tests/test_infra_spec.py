@@ -107,4 +107,5 @@ def test_synonym_dataset_has_cases_for_real_addresses(loaded_config):
 
 def test_region_match_accepts_domodedovo_as_moscow_oblast_context():
     form = AddressForm.__new__(AddressForm)
-    assert form._is_region_match("Московская область, мкр Центральный", "Домодедово")
+    assert not form._is_region_match("Московская область, мкр Центральный", "Домодедово")
+    assert form._is_domodedovo_oblast_alias_match("Московская область, мкр Центральный", "Домодедово")

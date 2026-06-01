@@ -119,7 +119,11 @@ def run_search_case(
         form.fill_street(case.street_query)
         form.wait_street_suggest()
         form.assert_street_in_suggest(case.expected_street)
-        form.select_street(case.expected_street, preferred_region=case.region)
+        form.select_street(
+            case.expected_street,
+            preferred_region=case.region,
+            allow_domodedovo_oblast_alias=(case.variant == "B"),
+        )
         selected_street = case.expected_street
 
         form.fill_house(case.house_query)
@@ -410,7 +414,11 @@ def run_regional_navigation_case(
         form.fill_street(address_case["street_query"])
         form.wait_street_suggest()
         form.assert_street_in_suggest(address_case["expected_street"])
-        form.select_street(address_case["expected_street"], preferred_region=address_case["region"])
+        form.select_street(
+            address_case["expected_street"],
+            preferred_region=address_case["region"],
+            allow_domodedovo_oblast_alias=(navigation_case.variant == "B"),
+        )
 
         form.fill_house(address_case["house_query"])
         form.wait_house_suggest()
