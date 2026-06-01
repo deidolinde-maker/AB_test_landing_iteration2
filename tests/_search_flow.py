@@ -280,9 +280,15 @@ def run_search_case(
                 "artifacts": artifacts,
                 "error": error_payload,
             }
-            application_json_store.append(record)
             attach_json("application_record", record)
-            attach_json("applications_json_snapshot", application_json_store.read())
+            if submit_success:
+                application_json_store.append(record)
+                attach_json("applications_json_snapshot", application_json_store.read())
+            else:
+                attach_text(
+                    "applications_json_skip_reason",
+                    "Record is not appended because submit_success is false.",
+                )
 
 
 def _classify_error(exc: Exception) -> str:
