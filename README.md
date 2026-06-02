@@ -2,14 +2,21 @@
 
 Автотесты второй итерации A/B-теста `testNewAddressPoisk` для лендинга МТС Интернет.
 
-Цель iteration 2: пройти пользовательский сценарий до отправки заявки, сохранить результат в общий JSON для iteration 3 и приложить диагностические артефакты в Allure.
+Цель iteration 2: пройти пользовательский сценарий до успешной отправки заявки, сохранить результат в общий JSON для iteration 3 и приложить диагностические артефакты в Allure.
+
+## Текущий статус
+
+- Каркас iteration 2 собран end-to-end: A/B запуск, submit-матрица, JSON-хранилище, Allure, mini bug report.
+- В JSON попадают только успешные сценарии, то есть записи с `submit_success == true`.
+- Ложные падения на success marker уже устранены на уровне тестового каркаса.
+- Известные падения в B-ветке сейчас относятся к продукту и данным, а не к недоделкам тестов.
 
 ## Что проверяет проект
 
 - принудительный запуск variant `A` и `B` через cookie `testNewAddressPoisk`;
 - открытие 4 URL: `no_region`, `moscow_subdomain`, `balashikha_folder`, `domodedovo_folder`;
 - обязательные формы `checkaddress`, `connection`, `profit`;
-- смену региона внутри формы без изменения URL;
+- смена региона внутри формы без изменения URL страницы;
 - выбор улицы и дома из саджеста;
 - ввод телефона `9999999999`;
 - submit формы;
@@ -18,22 +25,42 @@
 - Allure artifacts: cookies, `_ym_uid`, network, console, screenshot/video, application record;
 - mini bug report в Markdown и JSON при ошибке.
 
-## Матрица
+## Текущий набор датасетов
 
-Основной dataset: `submit_applications`.
+Основной submit dataset: `submit_applications`.
 
 ```text
 4 URL x 3 forms x 2 variants = 24 pytest test items
 ```
 
-Дополнительные диагностические dataset-ы:
+Диагностические dataset-ы:
 
-- `form_open_smoke` — проверка открытия обязательных форм без submit;
-- `json_store_smoke` — smoke проверка JSON-хранилища;
-- `submit_success_marker_smoke` — smoke проверка success URL markers;
-- `mini_bug_report_smoke` — smoke проверка генерации mini bug report.
+| dataset | назначение | submit |
+|---|---|---:|
+| `form_open_smoke` | проверка открытия обязательных форм без submit | false |
+| `json_store_smoke` | smoke-проверка JSON-хранилища и run_id | false |
+| `submit_success_marker_smoke` | smoke-проверка success URL markers | false |
+| `mini_bug_report_smoke` | smoke-проверка генерации mini bug report | false |
+| `ab_cookie` | проверка cookie `testNewAddressPoisk` на URL-матрице | false |
+| `forbidden_region` | негативные адреса и ожидаемые ошибки поиска | false |
+| `isolation` | изоляция old/v2 address datasets | false |
+| `adjacent` | пограничные адреса и смежные варианты | false |
+| `region_change` | смена региона внутри формы до submit | true |
+| `synonyms` | поиск по синонимам улиц и адресов | true |
+| `regional_navigation` | проверка цепочки региональной навигации | false |
 
-Формат `case_id`:
+`region_change` и `synonyms` тоже доходят до submit и используют общий success marker flow. Датасеты типа `smoke` и `ab_cookie` до submit не доходят.
+
+## Известные продуктовые блокеры
+
+На текущий момент в B-ветке остаются продуктовые несовпадения:
+
+- `B_balashikha_chekhova` и `B_moscow_lipovy_park` ходят в `v1` вместо `v2`;
+- `B_mo_domodedovo_kolomiytsa` не находит дом `8/1` в саджесте.
+
+Это баги продукта или тестовых данных, а не недоделка тестового каркаса.
+
+## Формат `case_id`
 
 ```text
 {site}__{url_type}__{form_key}__{variant}__{address_case_id}
@@ -60,7 +87,7 @@ mts_internet_online__moscow_subdomain__checkaddress__B__B_moscow_lipovy_park
 TESTNEWADDRESSPOISK_APPLICATIONS_JSON=/custom/path.json
 ```
 
-JSON защищён lock-файлом и дописывается атомарно для совместимости с `pytest-xdist` и несколькими pytest-процессами одного Jenkins build.
+JSON защищён lock-файлом и дописывается атомарно, чтобы совместно работать с `pytest-xdist` и несколькими pytest-процессами одного Jenkins build.
 
 ## Локальный запуск
 
