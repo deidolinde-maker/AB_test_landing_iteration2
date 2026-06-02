@@ -97,6 +97,8 @@ def _expand_across_dimensions(config: LoadedConfig, raw_cases: Iterable[dict], d
                             url_type=url_type,
                             form=form.name,
                             dataset=dataset,
+                            phone=str(config.runtime.get("phone", "9999999999")),
+                            success_url_markers=list(config.success_url_markers),
                         )
                     )
     return expanded
