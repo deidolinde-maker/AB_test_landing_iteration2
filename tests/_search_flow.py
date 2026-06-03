@@ -272,6 +272,7 @@ def run_search_case(
                 "expected_lead_form_type": case.expected_lead_form_type,
                 "expected_order_site": case.expected_order_site,
                 "address_version": case.address_version,
+                "region_id": case.region_id,
                 "region_selected_in_form": case.region,
                 "expected_id_type": case.expected_id_type,
                 "expected_id": case.expected_id,

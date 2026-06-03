@@ -100,6 +100,15 @@ def test_iteration_two_contract_files_are_present_and_parseable():
     assert "{{ case_id }}" in template
 
 
+def test_iteration_two_applications_schema_requires_region_id():
+    root = Path(__file__).resolve().parents[1]
+    schema = json.loads((root / "schemas/jenkins_applications.schema.json").read_text(encoding="utf-8"))
+    application_required = schema["properties"]["applications"]["items"]["required"]
+    application_properties = schema["properties"]["applications"]["items"]["properties"]
+    assert "region_id" in application_required
+    assert application_properties["region_id"]["type"] == "integer"
+
+
 def test_synonym_dataset_has_cases_for_real_addresses(loaded_config):
     cases = synonym_cases(loaded_config)
     assert cases, "synonym_cases should not be empty for current config"
