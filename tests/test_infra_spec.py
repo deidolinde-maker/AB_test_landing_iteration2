@@ -10,6 +10,7 @@ import pytest
 
 from helpers.application_json_store import ApplicationJsonStore
 from helpers.config_loader import load_config
+from helpers.network_recorder import NetworkRecorder
 from helpers.test_case_factory import main_search_cases, synonym_cases
 from components.address_form import AddressForm
 from tests._search_flow import _should_append_application_record
@@ -107,6 +108,39 @@ def test_iteration_two_applications_schema_requires_region_id():
     application_properties = schema["properties"]["applications"]["items"]["properties"]
     assert "region_id" in application_required
     assert application_properties["region_id"]["type"] == "integer"
+
+
+def test_network_recorder_extracts_nested_search_records():
+    payload = {
+        "data": [
+            {
+                "data": {
+                    "id": 1067,
+                    "region_id": 77,
+                    "street_id": 168,
+                    "house": "2",
+                    "street_name": "Липовый парк",
+                    "street_type": "ул",
+                    "locality_id": 16,
+                    "locality_name": "п Коммунарка",
+                },
+                "highlight": {"full": "<em>2</em>"},
+            }
+        ]
+    }
+    records = NetworkRecorder._extract_search_records(payload)
+    assert records == [
+        {
+            "id": 1067,
+            "region_id": 77,
+            "street_id": 168,
+            "house": "2",
+            "street_name": "Липовый парк",
+            "street_type": "ул",
+            "locality_id": 16,
+            "locality_name": "п Коммунарка",
+        }
+    ]
 
 
 def test_synonym_dataset_has_cases_for_real_addresses(loaded_config):

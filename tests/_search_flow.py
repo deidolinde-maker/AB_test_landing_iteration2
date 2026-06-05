@@ -39,7 +39,7 @@ def run_search_case(
     site_config,
     form_config,
     tmp_path: Path,
-    verify_v2_endpoints: bool = False,
+    verify_search_payload: bool = False,
     application_json_store=None,
     fail_on_missing_ym_uid: bool = False,
 ) -> None:
@@ -144,8 +144,15 @@ def run_search_case(
             f"Step: Validate selected address ID\nExpected: {case.expected_id}\nActual: {actual_id}"
         )
 
-        if verify_v2_endpoints:
-            recorder.assert_v2_endpoints_for_b()
+        if verify_search_payload:
+            recorder.assert_b_search_payload(
+                expected_id=case.expected_id,
+                expected_street=case.expected_street,
+                expected_house=case.expected_house,
+                expected_region_id=case.region_id,
+                expected_locality_id=case.expected_locality_id,
+                expected_locality_name=case.expected_locality_name,
+            )
 
         form.fill_phone(case.phone)
         actual_phone = form.get_phone_value()
@@ -314,6 +321,8 @@ def _classify_error(exc: Exception) -> str:
         return "house_not_found_in_suggest"
     if "validate selected address id" in text:
         return "selected_address_id_mismatch"
+    if "search_payload_mismatch" in text or "validate b search payload" in text:
+        return "search_payload_mismatch"
     if "ввод номера телефона" in text or "phone" in text:
         return "phone_fill_failed"
     if "подготовка к отправке заявки" in text or "submit button" in text:

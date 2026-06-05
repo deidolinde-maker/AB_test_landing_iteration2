@@ -28,6 +28,8 @@ class SearchCase:
     expected_lead_form_type: str = ""
     expected_order_site: str = ""
     form_title: str = ""
+    expected_locality_id: int | None = None
+    expected_locality_name: str | None = None
     phone: str = "9999999999"
     success_url_markers: list[str] | None = None
     is_adjacent: bool = False

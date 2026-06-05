@@ -22,7 +22,7 @@ def test_search_variant_a(
         site_config=site_config_map[case.site],
         form_config=form_config_map[case.form],
         tmp_path=tmp_path,
-        verify_v2_endpoints=False,
+        verify_search_payload=False,
         application_json_store=application_json_store,
         fail_on_missing_ym_uid=fail_on_missing_ym_uid,
     )

@@ -269,6 +269,8 @@ def build_search_case(
         expected_lead_form_type=expected_lead_form_type,
         expected_order_site=expected_order_site,
         form_title=form_title,
+        expected_locality_id=raw_case.get("expected_locality_id"),
+        expected_locality_name=raw_case.get("expected_locality_name"),
         phone=phone,
         success_url_markers=success_url_markers,
         is_adjacent=bool(raw_case.get("is_adjacent", False)),
