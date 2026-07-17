@@ -17,7 +17,7 @@ def test_mini_bug_report_smoke_render_failed_case():
         dataset="submit_applications",
         expected_street="Липовый парк",
         expected_house="2",
-        expected_id=1067,
+        expected_id=3633,
         expected_id_type="house_id",
         street_query="Липовый парк",
         house_query="2",

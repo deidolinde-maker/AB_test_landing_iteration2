@@ -115,7 +115,7 @@ def test_network_recorder_extracts_nested_search_records():
         "data": [
             {
                 "data": {
-                    "id": 1067,
+                    "id": 3633,
                     "region_id": 77,
                     "street_id": 168,
                     "house": "2",
@@ -131,7 +131,7 @@ def test_network_recorder_extracts_nested_search_records():
     records = NetworkRecorder._extract_search_records(payload)
     assert records == [
         {
-            "id": 1067,
+            "id": 3633,
             "region_id": 77,
             "street_id": 168,
             "house": "2",
