@@ -16,7 +16,7 @@ pipeline {
     string(name: 'SITE', defaultValue: 'mts_internet_online', description: 'Site key from config/sites.yaml')
     string(name: 'PYTEST_BIN', defaultValue: 'pytest', description: 'Pytest command (for example .venv/bin/pytest)')
     string(name: 'PYTHON_BIN', defaultValue: 'python3', description: 'Python command (for example .venv/bin/python)')
-    choice(name: 'RUN_SUITE', choices: ['form_matrix', 'dataset_suite', 'both', 'single_case'], description: 'Which suite to run')
+    choice(name: 'RUN_SUITE', choices: ['submit_matrix', 'form_matrix', 'dataset_suite', 'both', 'single_case'], description: 'Which suite to run. submit_matrix and form_matrix both run submit scenarios across all url types.')
     booleanParam(name: 'FAIL_ON_TEST_FAILURES', defaultValue: false, description: 'If true, build fails when any test run has failed tests')
     string(name: 'CASE_URL_TYPE', defaultValue: 'no_region', description: 'Used when RUN_SUITE=single_case')
     choice(name: 'CASE_VARIANT', choices: ['all', 'A', 'B'], description: "Used when RUN_SUITE=single_case. 'all' runs both A and B.")
@@ -225,7 +225,7 @@ pipeline {
 
     stage('Run Form Matrix (All url_type)') {
       when {
-        expression { params.RUN_SUITE == 'form_matrix' || params.RUN_SUITE == 'both' }
+        expression { params.RUN_SUITE == 'submit_matrix' || params.RUN_SUITE == 'form_matrix' || params.RUN_SUITE == 'both' }
       }
       steps {
         sh '''
