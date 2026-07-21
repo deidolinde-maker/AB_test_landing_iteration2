@@ -43,9 +43,10 @@ def test_main_search_case_ids_are_unique_and_stable_format(loaded_config):
     for variant in ("A", "B"):
         cases = main_search_cases(loaded_config, variant)
         ids = [case.pytest_id for case in cases]
-        assert len(ids) == 12
+        assert len(ids) == 24
         assert len(ids) == len(set(ids))
         assert all(PYTEST_ID_PATTERN.match(case_id) for case_id in ids)
+        assert {case.site for case in cases} == {"mts_internet_online", "stage_project"}
         assert all(case.dataset == "submit_applications" for case in cases)
         assert all(case.phone == "9999999999" for case in cases)
 

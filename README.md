@@ -11,6 +11,10 @@
 - Ложные падения на success marker уже устранены на уровне тестового каркаса.
 - Известные падения в B-ветке сейчас относятся к продукту и данным, а не к недоделкам тестов.
 
+Поддерживаемые site scopes:
+- `mts_internet_online` - текущая основная площадка;
+- `stage_project` - stage-площадка для расширения доменов и подготовки к новым prod-сайтам.
+
 ## Что проверяет проект
 
 - принудительный запуск variant `A` и `B` через cookie `testNewAddressPoisk`;
@@ -30,7 +34,7 @@
 Основной submit dataset: `submit_applications`.
 
 ```text
-4 URL x 3 forms x 2 variants = 24 pytest test items
+2 site scopes x 4 URL x 3 forms x 2 variants = 48 pytest test items
 ```
 
 Диагностические dataset-ы:
