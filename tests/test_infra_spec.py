@@ -122,7 +122,7 @@ def test_network_recorder_extracts_nested_search_records():
                     "house": "2",
                     "street_name": "Липовый парк",
                     "street_type": "ул",
-                    "locality_id": 16,
+                    "locality_id": 103,
                     "locality_name": "п Коммунарка",
                 },
                 "highlight": {"full": "<em>2</em>"},
@@ -138,7 +138,7 @@ def test_network_recorder_extracts_nested_search_records():
             "house": "2",
             "street_name": "Липовый парк",
             "street_type": "ул",
-            "locality_id": 16,
+            "locality_id": 103,
             "locality_name": "п Коммунарка",
         }
     ]
