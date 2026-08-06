@@ -43,10 +43,10 @@ def test_main_search_case_ids_are_unique_and_stable_format(loaded_config):
     for variant in ("A", "B"):
         cases = main_search_cases(loaded_config, variant)
         ids = [case.pytest_id for case in cases]
-        assert len(ids) == 24
+        assert len(ids) == 72
         assert len(ids) == len(set(ids))
         assert all(PYTEST_ID_PATTERN.match(case_id) for case_id in ids)
-        assert {case.site for case in cases} == {"mts_internet_online", "stage_project"}
+        assert {case.site for case in cases} == {"mts_internet_online", "stage_project", "rt_internet_online", "rtk_home_internet", "rtk_home", "rtk_ru_online"}
         assert all(case.dataset == "submit_applications" for case in cases)
         assert all(case.phone == "9999999999" for case in cases)
 
@@ -116,13 +116,13 @@ def test_network_recorder_extracts_nested_search_records():
         "data": [
             {
                 "data": {
-                    "id": 3633,
+                    "id": 1067,
                     "region_id": 77,
                     "street_id": 168,
                     "house": "2",
                     "street_name": "Липовый парк",
                     "street_type": "ул",
-                    "locality_id": 103,
+                    "locality_id": 16,
                     "locality_name": "п Коммунарка",
                 },
                 "highlight": {"full": "<em>2</em>"},
@@ -132,13 +132,13 @@ def test_network_recorder_extracts_nested_search_records():
     records = NetworkRecorder._extract_search_records(payload)
     assert records == [
         {
-            "id": 3633,
+            "id": 1067,
             "region_id": 77,
             "street_id": 168,
             "house": "2",
             "street_name": "Липовый парк",
             "street_type": "ул",
-            "locality_id": 103,
+            "locality_id": 16,
             "locality_name": "п Коммунарка",
         }
     ]
@@ -151,5 +151,5 @@ def test_synonym_dataset_has_cases_for_real_addresses(loaded_config):
 
 def test_region_match_accepts_domodedovo_as_moscow_oblast_context():
     form = AddressForm.__new__(AddressForm)
-    assert not form._is_region_match("Московская область, мкр Центральный", "Домодедово")
-    assert form._is_domodedovo_oblast_alias_match("Московская область, мкр Центральный", "Домодедово")
+    assert not form._is_region_match("Московская область, г Домодедово", "Домодедово")
+    assert form._is_domodedovo_oblast_alias_match("Московская область, г Домодедово", "Домодедово")

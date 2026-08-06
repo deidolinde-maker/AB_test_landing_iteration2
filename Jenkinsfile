@@ -13,7 +13,7 @@ pipeline {
   }
 
   parameters {
-    choice(name: 'SITE', choices: ['mts_internet_online', 'stage_project'], description: 'Site key from config/sites.yaml')
+    choice(name: 'SITE', choices: ['mts_internet_online', 'stage_project', 'rt_internet_online', 'rtk_home_internet', 'rtk_home', 'rtk_ru_online'], description: 'Site key from config/sites.yaml')
     string(name: 'PYTEST_BIN', defaultValue: 'pytest', description: 'Pytest command (for example .venv/bin/pytest)')
     string(name: 'PYTHON_BIN', defaultValue: 'python3', description: 'Python command (for example .venv/bin/python)')
     choice(name: 'RUN_SUITE', choices: ['submit_matrix', 'form_matrix', 'dataset_suite', 'both', 'single_case'], description: 'Which suite to run. submit_matrix and form_matrix both run submit scenarios across all url types.')
@@ -50,7 +50,21 @@ pipeline {
         'mts_internet_online__balashikha_folder__profit__A__A_balashikha_ordzhonikidze',
         'mts_internet_online__balashikha_folder__profit__B__B_balashikha_chekhova',
         'mts_internet_online__domodedovo_folder__checkaddress__A__A_mo_domodedovo_lomonosova',
-        'mts_internet_online__domodedovo_folder__checkaddress__B__B_mo_domodedovo_kolomiytsa'
+        'mts_internet_online__domodedovo_folder__checkaddress__B__B_mo_domodedovo_kolomiytsa',
+        'rt_internet_online__no_region__checkaddress__A__A_moscow_alabyan',
+        'rt_internet_online__no_region__checkaddress__B__B_moscow_lipovy_park',
+        'rt_internet_online__moscow_subdomain__connection__A__A_moscow_alabyan',
+        'rt_internet_online__moscow_subdomain__connection__B__B_moscow_lipovy_park',
+        'rt_internet_online__balashikha_folder__profit__A__A_balashikha_ordzhonikidze',
+        'rt_internet_online__balashikha_folder__profit__B__B_balashikha_chekhova',
+        'rt_internet_online__domodedovo_folder__checkaddress__A__A_mo_domodedovo_lomonosova',
+        'rt_internet_online__domodedovo_folder__checkaddress__B__B_mo_domodedovo_kolomiytsa',
+        'rtk_home_internet__no_region__checkaddress__A__A_moscow_alabyan',
+        'rtk_home_internet__no_region__checkaddress__B__B_moscow_lipovy_park',
+        'rtk_home__no_region__checkaddress__A__A_moscow_alabyan',
+        'rtk_home__no_region__checkaddress__B__B_moscow_lipovy_park',
+        'rtk_ru_online__no_region__checkaddress__A__A_moscow_alabyan',
+        'rtk_ru_online__no_region__checkaddress__B__B_moscow_lipovy_park'
       ],
       description: "Select full iteration 2 case_id, or 'all' for all cases matching filters."
     )
