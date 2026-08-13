@@ -344,8 +344,8 @@ sites:
     urls:
       no_region: 'https://rtk-ru.online/'
       moscow_subdomain: 'https://moskva.rtk-ru.online/'
-      balashikha_folder: 'https://rtk-ru.online/balashiha'
-      domodedovo_folder: 'https://rtk-ru.online/domodedovo'
+      balashikha_folder: 'https://balashiha.rtk-ru.online/'
+      domodedovo_folder: 'https://domodedovo.rtk-ru.online/'
 
     expected_regions:
       no_region: 'Москва'
@@ -391,11 +391,11 @@ sites:
         expected_region: "Москва"
 
       - step: "go_to_balashikha"
-        expected_url: 'https://rtk-ru.online/balashiha'
+        expected_url: 'https://balashiha.rtk-ru.online/'
         expected_region: "Балашиха"
 
       - step: "go_to_domodedovo"
-        expected_url: 'https://rtk-ru.online/domodedovo'
+        expected_url: 'https://domodedovo.rtk-ru.online/'
         expected_region: "Домодедово"
 
     notes:
