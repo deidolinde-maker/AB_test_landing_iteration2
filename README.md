@@ -4,6 +4,8 @@
 
 Цель iteration 2: пройти пользовательский сценарий до успешной отправки заявки, сохранить результат в общий JSON для iteration 3 и приложить диагностические артефакты в Allure.
 
+С августа 2026 sender дополнительно пишет нормализованные поля для новой схемы БД и будущего матчинга в `101adviser`: `domain`, `base_url`, `page_url`, `scenario`, `form_type`, `street`, `street_id`, `house`, `house_id`, `address_id`, `ya_client_id`, `ya_cookie_name`.
+
 ## Текущий статус
 
 - Каркас iteration 2 собран end-to-end: A/B запуск, submit-матрица, JSON-хранилище, Allure, mini bug report.
@@ -93,6 +95,16 @@ TESTNEWADDRESSPOISK_APPLICATIONS_JSON=/custom/path.json
 ```
 
 JSON защищён lock-файлом и дописывается атомарно, чтобы совместно работать с `pytest-xdist` и несколькими pytest-процессами одного Jenkins build.
+
+Поверх legacy-полей iteration 2 JSON теперь также содержит нормализованный sender-блок:
+
+- `domain` — только hostname лендинга;
+- `base_url` — стартовый URL кейса;
+- `page_url` — URL страницы, с которой фактически отправлялась форма;
+- `scenario` — dataset/сценарий запуска;
+- `form_type` — тип формы в sender-терминах;
+- `street`, `street_id`, `house`, `house_id`, `address_id`;
+- `ya_client_id`, `ya_cookie_name`.
 
 ## Локальный запуск
 

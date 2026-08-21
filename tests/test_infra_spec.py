@@ -109,6 +109,19 @@ def test_iteration_two_applications_schema_requires_region_id():
     application_properties = schema["properties"]["applications"]["items"]["properties"]
     assert "region_id" in application_required
     assert application_properties["region_id"]["type"] == "integer"
+    assert "domain" in application_required
+    assert "base_url" in application_required
+    assert "page_url" in application_required
+    assert "scenario" in application_required
+    assert "form_type" in application_required
+    assert "street" in application_required
+    assert "house" in application_required
+    assert "submit_time" in application_required
+    assert application_properties["street_id"]["type"] == ["string", "integer", "null"]
+    assert application_properties["house_id"]["type"] == ["string", "integer", "null"]
+    assert application_properties["address_id"]["type"] == ["string", "integer", "null"]
+    assert application_properties["ya_client_id"]["type"] == ["string", "null"]
+    assert application_properties["ya_cookie_name"]["type"] == ["string", "null"]
 
 
 def test_network_recorder_extracts_nested_search_records():

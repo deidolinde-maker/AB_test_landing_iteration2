@@ -1,5 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
 
@@ -52,6 +53,41 @@ def _should_append_application_record(submit_success: bool) -> bool:
     return bool(submit_success)
 
 
+def _blank_to_none(value):
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def _extract_domain(value: str | None) -> str | None:
+    raw = (value or "").strip()
+    if not raw:
+        return None
+    try:
+        return urlparse(raw).hostname or None
+    except Exception:
+        return None
+
+
+def _extract_sender_address_fields(debug_state: dict | None) -> dict[str, str | None]:
+    hidden_ids = {}
+    if isinstance(debug_state, dict):
+        maybe_hidden = debug_state.get("hidden_ids")
+        if isinstance(maybe_hidden, dict):
+            hidden_ids = maybe_hidden
+
+    street_id = _blank_to_none(hidden_ids.get("IStreet")) or _blank_to_none(hidden_ids.get("id_street"))
+    house_id = _blank_to_none(hidden_ids.get("house_id")) or _blank_to_none(hidden_ids.get("IHouse"))
+    address_id = _blank_to_none(hidden_ids.get("address_id"))
+
+    return {
+        "street_id": street_id,
+        "house_id": house_id,
+        "address_id": address_id,
+    }
+
+
 def run_search_case(
     *,
     case,
@@ -78,6 +114,7 @@ def run_search_case(
     submit_success = False
     success_criterion = "not_submitted"
     error_payload = None
+    address_debug_state: dict = {}
     artifacts: dict = {}
 
     attach_json(
@@ -166,6 +203,7 @@ def run_search_case(
         assert actual_id, (
             f"Step: Validate selected address ID\nExpected: selected id for {case.expected_street}\nActual: {actual_id}"
         )
+        address_debug_state = form.collect_debug_state() or {}
 
         if verify_search_payload:
             recorder.assert_b_search_payload(
@@ -285,9 +323,16 @@ def run_search_case(
                 "response_snippet": submit_event.response_snippet,
             }
         if application_json_store is not None:
+            sender_address = _extract_sender_address_fields(address_debug_state)
+            current_ym_uid = get_ym_uid_cookie(context)
             record = {
                 "case_id": case.case_id,
                 "site": case.site,
+                "domain": _extract_domain(target_url),
+                "base_url": target_url,
+                "page_url": url_after_city_change or url_before_city_change or target_url,
+                "scenario": case.dataset,
+                "form_type": case.form,
                 "start_url": target_url,
                 "measurement_url": target_url,
                 "url_type": case.url_type,
@@ -297,6 +342,8 @@ def run_search_case(
                 "variant": case.variant,
                 "testNewAddressPoisk_cookie": get_ab_cookie(context),
                 "ym_uid": get_ym_uid_cookie(context),
+                "ya_client_id": current_ym_uid,
+                "ya_cookie_name": "_ym_uid",
                 "form_key": case.form,
                 "form_title": case.form_title,
                 "expected_lead_form_type": case.expected_lead_form_type,
@@ -307,9 +354,14 @@ def run_search_case(
                 "expected_id_type": case.expected_id_type,
                 "expected_id": case.expected_id,
                 "street_query": case.street_query,
+                "street": selected_street,
                 "selected_street": selected_street,
                 "house_query": case.house_query,
+                "house": selected_house,
                 "selected_house": selected_house,
+                "street_id": sender_address["street_id"],
+                "house_id": sender_address["house_id"],
+                "address_id": sender_address["address_id"],
                 "phone": case.phone,
                 "submit_time": submit_time,
                 "url_success_markers": case.success_url_markers or [],
