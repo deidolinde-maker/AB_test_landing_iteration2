@@ -144,6 +144,7 @@ def run_search_case(
         form.select_street(
             case.expected_street,
             preferred_region=case.region,
+            preferred_locality=case.expected_locality_name,
             allow_domodedovo_oblast_alias=(case.variant == "B"),
         )
         selected_street = case.expected_street
@@ -457,6 +458,7 @@ def run_regional_navigation_case(
         form.select_street(
             address_case["expected_street"],
             preferred_region=address_case["region"],
+            preferred_locality=address_case.get("expected_locality_name"),
             allow_domodedovo_oblast_alias=(navigation_case.variant == "B"),
         )
 
